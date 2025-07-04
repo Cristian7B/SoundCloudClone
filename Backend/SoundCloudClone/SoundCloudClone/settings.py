@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'apiAutenticacion',
+    'apiBuscar',
     'rest_framework',
     'rest_framework_simplejwt',
 ]
