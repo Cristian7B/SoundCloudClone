@@ -21,5 +21,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/auth/', include('apiAutenticacion.urls')),
     path('buscar/', include('apiBuscar.urls')),
-
+    path('sugerencias/', include('apiSugerenciaCanciones.urls')),
+    path('sugerencias-playlists/', include('apiSugerenciaPlaylists.urls')),
 ]
