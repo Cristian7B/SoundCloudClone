@@ -8,7 +8,7 @@ class AlbumSerializer(serializers.ModelSerializer):
 
 class CancionSerializer(serializers.ModelSerializer):
     album_titulo = serializers.CharField(source='album.titulo', read_only=True)
-    
+        
     class Meta:
         model = Cancion
         fields = '__all__'
@@ -46,6 +46,20 @@ class PlaylistCancionSerializer(serializers.ModelSerializer):
     class Meta:
         model = PlaylistCancion
         fields = '__all__'
+
+class PlaylistAgregarCancionSerializer(serializers.Serializer):
+    """
+    Serializer específico para agregar canciones a playlists
+    """
+    cancion_id = serializers.IntegerField(help_text="ID de la canción a agregar")
+    orden = serializers.IntegerField(required=False, help_text="Posición en la playlist (opcional)")
+    usuario_id = serializers.IntegerField(required=False, help_text="ID del usuario (solo para testing)")
+    
+    def validate_cancion_id(self, value):
+        """Validar que la canción existe"""
+        if not Cancion.objects.filter(pk=value).exists():
+            raise serializers.ValidationError("La canción no existe")
+        return value
 
 class InteraccionSerializer(serializers.ModelSerializer):
     class Meta:

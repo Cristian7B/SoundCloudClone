@@ -5,7 +5,8 @@ from django.db.models import Q
 from .models import Cancion, Playlist, Album, PlaylistCancion
 from .serializers import (
     CancionSerializer, PlaylistSerializer, AlbumSerializer, 
-    CancionCreateSerializer, PlaylistCreateSerializer, PlaylistCancionSerializer
+    CancionCreateSerializer, PlaylistCreateSerializer, PlaylistCancionSerializer,
+    PlaylistAgregarCancionSerializer
 )
 
 class CancionListCreateView(generics.ListCreateAPIView):
@@ -232,17 +233,18 @@ class PlaylistAgregarCancionView(generics.CreateAPIView):
     Endpoint para agregar una canción a una playlist
     URL: /playlists/{playlist_id}/agregar-cancion/
     """
-    serializer_class = PlaylistCancionSerializer
+    serializer_class = PlaylistAgregarCancionSerializer
     permission_classes = [AllowAny]  # Cambiar a [IsAuthenticated] cuando esté listo
     
     def create(self, request, *args, **kwargs):
         playlist_id = self.kwargs['pk']
-        cancion_id = request.data.get('cancion_id')
         
-        if not cancion_id:
-            return Response({
-                'error': 'cancion_id es requerido'
-            }, status=status.HTTP_400_BAD_REQUEST)
+        # Validar datos con el serializer
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        
+        cancion_id = serializer.validated_data['cancion_id']
+        orden = serializer.validated_data.get('orden')
         
         # Verificar que la playlist existe
         try:
@@ -252,19 +254,14 @@ class PlaylistAgregarCancionView(generics.CreateAPIView):
                 'error': 'Playlist no encontrada'
             }, status=status.HTTP_404_NOT_FOUND)
         
-        # Verificar que la canción existe
-        try:
-            cancion = Cancion.objects.get(pk=cancion_id)
-        except Cancion.DoesNotExist:
-            return Response({
-                'error': 'Canción no encontrada'
-            }, status=status.HTTP_404_NOT_FOUND)
+        # Obtener canción (ya validada por el serializer)
+        cancion = Cancion.objects.get(pk=cancion_id)
         
         # Verificar permisos (solo el creador puede modificar la playlist)
         if request.user.is_authenticated:
             usuario_id = request.user.user_id
         else:
-            usuario_id = request.data.get('usuario_id', 1)  # Para testing
+            usuario_id = serializer.validated_data.get('usuario_id', 1)  # Para testing
         
         if playlist.usuario_id != usuario_id:
             return Response({
@@ -277,9 +274,10 @@ class PlaylistAgregarCancionView(generics.CreateAPIView):
                 'error': 'La canción ya está en la playlist'
             }, status=status.HTTP_400_BAD_REQUEST)
         
-        # Calcular el orden (último + 1)
-        ultimo_orden = PlaylistCancion.objects.filter(playlist=playlist).count()
-        orden = request.data.get('orden', ultimo_orden)
+        # Calcular el orden (último + 1 si no se especifica)
+        if orden is None:
+            ultimo_orden = PlaylistCancion.objects.filter(playlist=playlist).count()
+            orden = ultimo_orden
         
         # Crear la relación
         playlist_cancion = PlaylistCancion.objects.create(
@@ -288,11 +286,11 @@ class PlaylistAgregarCancionView(generics.CreateAPIView):
             orden=orden
         )
         
-        serializer = PlaylistCancionSerializer(playlist_cancion)
+        response_serializer = PlaylistCancionSerializer(playlist_cancion)
         
         return Response({
             'message': 'Canción agregada a la playlist exitosamente',
-            'playlist_cancion': serializer.data
+            'playlist_cancion': response_serializer.data
         }, status=status.HTTP_201_CREATED)
 
 class PlaylistEliminarCancionView(generics.DestroyAPIView):
