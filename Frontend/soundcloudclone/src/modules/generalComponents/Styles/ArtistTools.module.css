@@ -1,0 +1,28 @@
+.artistTools {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    width: 360px;
+    height: 203px;
+    gap: 10px;
+}
+.artistToolsContainerTop {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.artistToolsContainerCenter {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: 1fr 1fr;
+    width: 100%;
+    gap: 5px;
+}
+
+.artistToolsContainerBottom {
+    display: flex;
+    width: 100%;
+    align-items: center;
+}
