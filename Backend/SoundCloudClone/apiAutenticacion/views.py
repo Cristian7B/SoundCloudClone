@@ -1,90 +1,94 @@
-import envirion
+import environ
 import os
-import requests
-
-from google.auth.transport import requests
-
 from rest_framework import generics, status
-from .serializers import UserRegisterSerializer, UserLoginSerializer, UserUpdateSerializer
-from django.contrib.auth import logout
-from django.contrib.auth.models import User
-from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+from rest_framework.exceptions import ValidationError
+from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth import logout, get_user_model
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from .serializers import UserRegisterSerializer, UserLoginSerializer, UserUpdateSerializer, UserSerializer
 
+# Usar el modelo de usuario configurado
+User = get_user_model()
 
-env = envirion.Env()
-environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+env = environ.Env()
+environ.Env.read_env(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), '.env'))
 
 class UserRegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
+    serializer_class = UserRegisterSerializer
     permission_classes = [AllowAny]
 
-    def post(self, request):
-        serializer_class = UserRegisterSerializer(request.data)
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        
+        # Generar tokens JWT
+        refresh = RefreshToken.for_user(user)
+        
+        return Response({
+            'message': 'Usuario registrado exitosamente',
+            'user': UserSerializer(user).data,
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+        }, status=status.HTTP_201_CREATED)
 
+class UserLoginView(generics.GenericAPIView):
+    serializer_class = UserLoginSerializer
+    permission_classes = [AllowAny]
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+        
+        # Generar tokens JWT
+        refresh = RefreshToken.for_user(user)
+        
+        return Response({
+            'message': 'Login exitoso',
+            'user': UserSerializer(user).data,
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+        }, status=status.HTTP_200_OK)
+
+class UserProfileView(generics.RetrieveAPIView):
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user
+
+class UpdateUserInfo(generics.UpdateAPIView):
+    serializer_class = UserUpdateSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        
+        return Response({
+            'message': 'Perfil actualizado exitosamente',
+            'user': serializer.data
+        }, status=status.HTTP_200_OK)
+
+class UserLogout(generics.GenericAPIView):
+    permission_classes = [AllowAny]
+    
+    def post(self, request):
         try:
-            serializer_class.is_valid(raise_exception=True)
-            databaseurl = env('DATABASE_SERVICE_URL')
-            response = requests.post(f'{databaseurl}/register_user', data = request.data)
-
-            if response.status  != 201:
-                return Response({'error' : 'Error registrando nuevo usuario.'}, status = status.HTTP_504_GATEWAY_TIMEOUT)
-            
-            return Response(response.json(), status=status.HTTP_201_CREATED)
-        except ValidationError as e:
-            return Response({'error_message' : 'Error registrando nuevo usuario.'}, status = status.HTTP_400_BAD_REQUEST)
-
-class UserLoginView(generics.CreateAPIView):
-    
-    queryset = User.objects.all()
-    permission_classes = (AllowAny,)
-
-    def get(self, request):
-        user = request.user
-
-        databaseurl = env('DATABASE_SERVICE_URL')
-        response = requests.get(f'{databaseurl}/getUserInfo', params = user)
-
-        if response.status != 200:
-            return Response({'error': 'Error obteniendo la informacion del usuario'}, status=status.HTTP_504_GATEWAY_TIMEOUT )
-        
-        return Response(response.json(), status=status.HTTP_200_OK)
-    
-class UpdateUserInfo(generics.CreateAPIView):
-    queryset = User.objects.all()
-    permission_classes = (AllowAny,)
-
-    def post(self, request):
-        serializer_class = UserUpdateSerializer(request.user, data=request.data)
-
-        if serializer_class.is_valid():
-            databaseurl = env('DATABASE_SERVICE_URL')
-            response = requests.post(f'{databaseurl}/update_user_info', data=request.data)
-
-            if response.status != 200:
-                return Response({'error': 'Error actualizando los datos del usuario'}, status = status.HTTP_504_GATEWAY_TIMEOUT)
-        
-            return Response(response.json(), status = status.HTTP_200_OK)
-        return Response({'error': 'Error validando datos del usuario'}, status.status.HTTP_400_BAD_REQUEST)
-
-class UserLogin(generics.CreateAPIView):
-    queryset = User.objects.all()
-    permission_classes = (AllowAny,)
-
-    def post(self, request):
-        data = request.data
-        assert validate_email(data)
-        assert validate_password(data)
-
-        databaseurl = env('DATABASE_SERVICE_URL')
-        response = requests.post(f'{databaseurl}/login_user', data = data)
-
-        if response.status != 200:
-            return Response({'error_message' : 'Error al iniciar sesion.'}, status = status.HTTP_400_BAD_REQUEST)
-        
-        return Response(response.json(), status = status.HTTP_200_OK)
-    
-class UserLogout(generics.CreateAPIView):
-    permission_classes = (AllowAny,)
-    def post(self,request):
-        logout(request)
-        return Response(status = status.HTTP_200_OK)
+            refresh_token = request.data.get("refresh")
+            if refresh_token:
+                token = RefreshToken(refresh_token)
+                token.blacklist()
+            logout(request)
+            return Response({'message': 'Logout exitoso'}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'error': 'Error en logout'}, status=status.HTTP_400_BAD_REQUEST)

@@ -20,8 +20,9 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/auth/', include('apiAutenticacion.urls')),
-    path('buscar/', include('apiBuscar.urls')),
-    path('sugerencias/', include('apiSugerenciaCanciones.urls')),
-    path('sugerencias-playlists/', include('apiSugerenciaPlaylists.urls')),
-    path('registro/', include('apiDatabase.urls'))
+    path('api/contenido/', include('apiPersistencia.urls')),
+    path('api/buscar/', include('apiBuscar.urls')),
+    path('api/sugerencias-canciones/', include('apiSugerenciaCanciones.urls')),
+    path('api/sugerencias-playlists/', include('apiSugerenciaPlaylists.urls')),
+    path('api/database/', include('apiDatabase.urls')),
 ]

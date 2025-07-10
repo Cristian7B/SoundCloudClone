@@ -2,18 +2,28 @@ import random
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.permissions import AllowAny
 
-from apiPlaylists.models import Playlist
-from apiPlaylists.serializers import PlaylistSerializer  # Reutilizamos el serializer
+from apiPersistencia.models import Playlist
+from apiBuscar.serializers import PlaylistSerializer
 
 class SugerenciaPlaylistsView(APIView):
+    permission_classes = [AllowAny]
+    
     def get(self, request):
-        todas_playlists = list(Playlist.objects.all())
+        todas_playlists = list(Playlist.objects.filter(es_publica=True))
 
         if not todas_playlists:
-            return Response({"mensaje": "No hay playlists disponibles."}, status=status.HTTP_404_NOT_FOUND)
+            return Response({
+                "mensaje": "No hay playlists disponibles."
+            }, status=status.HTTP_404_NOT_FOUND)
 
-        seleccionadas = random.sample(todas_playlists, min(3, len(todas_playlists)))
+        # Tomar 5 playlists aleatorias
+        cantidad = min(5, len(todas_playlists))
+        seleccionadas = random.sample(todas_playlists, cantidad)
         serializadas = PlaylistSerializer(seleccionadas, many=True)
 
-        return Response(serializadas.data, status=status.HTTP_200_OK)
+        return Response({
+            "mensaje": f"Se encontraron {cantidad} playlists sugeridas",
+            "playlists": serializadas.data
+        }, status=status.HTTP_200_OK)
