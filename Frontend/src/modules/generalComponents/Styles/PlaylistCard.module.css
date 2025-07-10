@@ -1,0 +1,218 @@
+/* PlaylistCard.module.css */
+.playlistCard {
+  width: 180px;
+  background-color: #1a1a1a;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid #333333;
+}
+
+.playlistCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.imageContainer {
+  position: relative;
+  width: 100%;
+  height: 180px;
+  overflow: hidden;
+}
+
+.coverImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.playlistCard:hover .coverImage {
+  transform: scale(1.05);
+}
+
+.soundcloudIcon {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 24px;
+  height: 24px;
+  background-color: rgba(0, 0, 0, 0.7);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.soundcloudIcon img {
+  width: 16px;
+  height: 16px;
+  filter: invert(1);
+}
+
+.playButton {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 60px;
+  height: 60px;
+  background-color: #FFF;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  z-index: 3;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.playButton.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.playButton:hover {
+  background-color: #fff;
+  transform: translate(-50%, -50%) scale(1.1);
+}
+
+.playButton img {
+  width: 20px;
+  height: 20px;
+  filter: invert(1);
+  margin-left: 2px;
+}
+
+.trackCountBadge {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: #ffffff;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 600;
+  z-index: 2;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(0, 0, 0, 0.3) 0%,
+    rgba(0, 0, 0, 0.1) 50%,
+    rgba(0, 0, 0, 0.3) 100%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 1;
+}
+
+.overlay.visible {
+  opacity: 1;
+}
+
+.content {
+  padding: 12px;
+  background-color: #1a1a1a;
+}
+
+.title {
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0 0 4px 0;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.subtitle {
+  color: #999999;
+  font-size: 12px;
+  font-weight: 400;
+  margin: 0;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Variantes para diferentes tamaños */
+.playlistCard.small {
+  width: 150px;
+}
+
+.playlistCard.small .imageContainer {
+  height: 150px;
+}
+
+.playlistCard.large {
+  width: 220px;
+}
+
+.playlistCard.large .imageContainer {
+  height: 220px;
+}
+
+.playlistCard.large .title {
+  font-size: 16px;
+}
+
+.playlistCard.large .subtitle {
+  font-size: 14px;
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+.playButton.visible {
+  animation: fadeIn 0.3s ease;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .playlistCard {
+    width: 160px;
+  }
+  
+  .imageContainer {
+    height: 160px;
+  }
+  
+  .playButton {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .playButton img {
+    width: 16px;
+    height: 16px;
+  }
+}

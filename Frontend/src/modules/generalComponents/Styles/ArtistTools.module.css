@@ -1,0 +1,53 @@
+.artistTools {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    width: 360px;
+    height: 203px;
+    gap: 10px;
+    position: absolute;
+    top: 87px;
+    right: 55px;
+}
+.artistToolsContainerTop {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    text-align: left;
+}
+
+.artistToolsContainerTop h3 {
+    font-size: 12px;
+    font-weight: 600;
+    color: #fff;
+    margin: 0;
+}
+
+.artistToolsContainerTop hr {
+    width: 100%;
+    border: 0.5px solid rgba(255, 255, 255, 0.15);
+    margin: 10px 0;
+}
+
+.artistToolsContainerCenter {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: 1fr 1fr;
+    width: 100%;
+    gap: 5px;
+}
+
+.artistToolsContainerBottom {
+    padding: 6px 16px;
+    display: flex;
+    text-align: left;
+    line-height: 20px;
+    align-items: center;
+    background-color: rgba(117, 100, 245, 0.32);
+    border-radius: 4px;
+    height: fit-content;
+    font-weight: 400;
+    font-size: 0.875rem;
+    gap: 12px;
+}
