@@ -43,7 +43,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'apiAutenticacion',
+    # 'apiAutenticacion',
+    # 'apiBuscar',
+    # 'apiSugerenciaCanciones',
+    # 'apiSugerenciaPlaylists',
     'rest_framework',
     'rest_framework_simplejwt',
 ]
