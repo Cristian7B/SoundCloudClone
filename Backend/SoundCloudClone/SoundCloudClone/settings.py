@@ -33,8 +33,21 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = env('EMAIL_HOST_USER', default='')  # Tu email
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', default='')  # Tu contraseña de aplicación
 
-# Application definition
+EMAIL_USE_LOCALTIME = True
+DEFAULT_CHARSET = 'utf-8'
+FILE_CHARSET = 'utf-8'
+
+USE_I18N = True
+USE_TZ = True
+
+
 
 INSTALLED_APPS = [
     'django.contrib.admin',

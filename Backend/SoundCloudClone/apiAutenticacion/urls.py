@@ -1,6 +1,9 @@
 # apiAutenticacion/urls.py
 from django.urls import path
-from .views import UserRegisterView, UserLoginView, UpdateUserInfo, UserLogout, UserProfileView, UserNombreView
+from .views import (
+    UserRegisterView, UserLoginView, UpdateUserInfo, UserLogout, UserProfileView, 
+    UserNombreView
+)
 from rest_framework_simplejwt.views import TokenRefreshView
 
 urlpatterns = [

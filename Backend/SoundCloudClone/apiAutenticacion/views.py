@@ -7,6 +7,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import logout, get_user_model
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from .serializers import UserRegisterSerializer, UserLoginSerializer, UserUpdateSerializer, UserSerializer, UserNombreSerializer
+from .email_utils import EmailService
 
 # Usar el modelo de usuario configurado
 User = get_user_model()
@@ -24,15 +25,25 @@ class UserRegisterView(generics.CreateAPIView):
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
         
+        # Enviar email de bienvenida
+        email_sent = EmailService.send_welcome_email(user)
+        
         # Generar tokens JWT
         refresh = RefreshToken.for_user(user)
         
-        return Response({
+        response_data = {
             'message': 'Usuario registrado exitosamente',
             'user': UserSerializer(user).data,
             'refresh': str(refresh),
             'access': str(refresh.access_token),
-        }, status=status.HTTP_201_CREATED)
+        }
+        
+        if email_sent:
+            response_data['email_message'] = f'Email de bienvenida enviado a {user.email}'
+        else:
+            response_data['email_message'] = 'Usuario creado pero hubo un problema enviando el email de bienvenida'
+        
+        return Response(response_data, status=status.HTTP_201_CREATED)
 
 class UserLoginView(generics.GenericAPIView):
     serializer_class = UserLoginSerializer
