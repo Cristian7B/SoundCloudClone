@@ -12,7 +12,13 @@ from .views import (
     PlaylistAgregarCancionView,
     PlaylistEliminarCancionView,
     PlaylistReordenarCancionesView,
-    PlaylistCancionListView
+    PlaylistCancionListView,
+    UsuarioPlaylistsView,
+    UsuarioCancionesView,
+    InteraccionCreateView,
+    InteraccionDeleteView,
+    UsuarioInteraccionesView,
+    InteraccionToggleView
 )
 
 urlpatterns = [
@@ -36,4 +42,14 @@ urlpatterns = [
     
     # Endpoints de Relaciones Playlist-Cancion
     path('playlist-canciones/', PlaylistCancionListView.as_view(), name='playlist-cancion-list'),
+    
+    # Endpoints de Usuario
+    path('usuarios/<int:usuario_id>/playlists/', UsuarioPlaylistsView.as_view(), name='usuario-playlists'),
+    path('usuarios/<int:usuario_id>/canciones/', UsuarioCancionesView.as_view(), name='usuario-canciones'),
+    path('usuarios/<int:usuario_id>/interacciones/', UsuarioInteraccionesView.as_view(), name='usuario-interacciones'),
+    
+    # Endpoints de Interacciones
+    path('interacciones/', InteraccionCreateView.as_view(), name='interaccion-create'),
+    path('interacciones/<int:pk>/', InteraccionDeleteView.as_view(), name='interaccion-delete'),
+    path('interacciones/toggle/', InteraccionToggleView.as_view(), name='interaccion-toggle'),
 ]

@@ -59,3 +59,11 @@ class UserUpdateSerializer(serializers.ModelSerializer):
     class Meta: 
         model = User
         fields = ['username', 'email', 'nombre']
+
+class UserNombreSerializer(serializers.ModelSerializer):
+    """
+    Serializer para retornar solo el nombre del usuario
+    """
+    class Meta:
+        model = User
+        fields = ['user_id', 'nombre', 'username']

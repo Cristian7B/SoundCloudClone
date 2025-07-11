@@ -2,11 +2,12 @@ from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.db.models import Q
-from .models import Cancion, Playlist, Album, PlaylistCancion
+from .models import Cancion, Playlist, Album, PlaylistCancion, Interaccion
 from .serializers import (
     CancionSerializer, PlaylistSerializer, AlbumSerializer, 
     CancionCreateSerializer, PlaylistCreateSerializer, PlaylistCancionSerializer,
-    PlaylistAgregarCancionSerializer
+    PlaylistAgregarCancionSerializer, InteraccionSerializer, InteraccionCreateSerializer,
+    InteraccionDetailSerializer
 )
 
 class CancionListCreateView(generics.ListCreateAPIView):
@@ -419,3 +420,347 @@ class PlaylistCancionListView(generics.ListAPIView):
     queryset = PlaylistCancion.objects.all().order_by('-added_at')
     serializer_class = PlaylistCancionSerializer
     permission_classes = [AllowAny]
+
+class UsuarioPlaylistsView(generics.ListAPIView):
+    """
+    Endpoint para obtener todas las playlists de un usuario específico
+    URL: /usuarios/{usuario_id}/playlists/
+    """
+    serializer_class = PlaylistSerializer
+    permission_classes = [AllowAny]
+    
+    def get_queryset(self):
+        usuario_id = self.kwargs['usuario_id']
+        return Playlist.objects.filter(usuario_id=usuario_id).order_by('-created_at')
+    
+    def list(self, request, *args, **kwargs):
+        usuario_id = self.kwargs['usuario_id']
+        queryset = self.get_queryset()
+        
+        # Verificar si se deben mostrar playlists privadas
+        mostrar_privadas = False
+        if request.user.is_authenticated and request.user.user_id == usuario_id:
+            mostrar_privadas = True
+        
+        # Filtrar playlists según permisos
+        if not mostrar_privadas:
+            queryset = queryset.filter(es_publica=True)
+        
+        serializer = self.get_serializer(queryset, many=True)
+        
+        # Separar playlists públicas y privadas para la respuesta
+        playlists_publicas = []
+        playlists_privadas = []
+        
+        for playlist_data in serializer.data:
+            if playlist_data['es_publica']:
+                playlists_publicas.append(playlist_data)
+            else:
+                playlists_privadas.append(playlist_data)
+        
+        response_data = {
+            'usuario_id': usuario_id,
+            'total_playlists': queryset.count(),
+            'playlists_publicas': {
+                'total': len(playlists_publicas),
+                'playlists': playlists_publicas
+            }
+        }
+        
+        # Solo mostrar playlists privadas si el usuario es el propietario
+        if mostrar_privadas and playlists_privadas:
+            response_data['playlists_privadas'] = {
+                'total': len(playlists_privadas),
+                'playlists': playlists_privadas
+            }
+        
+        return Response(response_data, status=status.HTTP_200_OK)
+
+class UsuarioCancionesView(generics.ListAPIView):
+    """
+    Endpoint para obtener todas las canciones de un usuario específico
+    URL: /usuarios/{usuario_id}/canciones/
+    """
+    serializer_class = CancionSerializer
+    permission_classes = [AllowAny]
+    
+    def get_queryset(self):
+        usuario_id = self.kwargs['usuario_id']
+        return Cancion.objects.filter(usuario_id=usuario_id).order_by('-created_at')
+    
+    def list(self, request, *args, **kwargs):
+        usuario_id = self.kwargs['usuario_id']
+        queryset = self.get_queryset()
+        
+        # Obtener estadísticas adicionales
+        total_reproducciones = sum(cancion.reproducciones for cancion in queryset)
+        total_likes = sum(cancion.likes_count for cancion in queryset)
+        total_reposts = sum(cancion.reposts_count for cancion in queryset)
+        
+        # Obtener géneros únicos
+        generos = list(set(cancion.genero for cancion in queryset if cancion.genero))
+        
+        # Obtener álbumes del usuario
+        albums_ids = list(set(cancion.album_id for cancion in queryset if cancion.album_id))
+        albums = Album.objects.filter(album_id__in=albums_ids) if albums_ids else []
+        
+        serializer = self.get_serializer(queryset, many=True)
+        
+        return Response({
+            'usuario_id': usuario_id,
+            'total_canciones': queryset.count(),
+            'estadisticas': {
+                'total_reproducciones': total_reproducciones,
+                'total_likes': total_likes,
+                'total_reposts': total_reposts,
+                'generos_musicales': generos,
+                'total_albums': len(albums)
+            },
+            'canciones': serializer.data
+        }, status=status.HTTP_200_OK)
+
+class InteraccionCreateView(generics.CreateAPIView):
+    """
+    Endpoint para crear interacciones (like, repost, follow)
+    URL: /interacciones/
+    """
+    serializer_class = InteraccionCreateSerializer
+    permission_classes = [AllowAny]  # Cambiar a [IsAuthenticated] cuando esté listo
+    
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        
+        tipo = serializer.validated_data['tipo']
+        cancion_id = serializer.validated_data.get('cancion_id')
+        playlist_id = serializer.validated_data.get('playlist_id')
+        usuario_objetivo_id = serializer.validated_data.get('usuario_objetivo_id')
+        
+        # Obtener usuario_id
+        if request.user.is_authenticated:
+            usuario_id = request.user.user_id
+        else:
+            usuario_id = serializer.validated_data.get('usuario_id', 1)  # Para testing
+        
+        # Validar que el usuario no se siga a sí mismo
+        if tipo == 'follow' and usuario_id == usuario_objetivo_id:
+            return Response({
+                'error': 'No puedes seguirte a ti mismo'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Verificar si la interacción ya existe
+        filtros = {'usuario_id': usuario_id, 'tipo': tipo}
+        
+        if cancion_id:
+            filtros['cancion_id'] = cancion_id
+        elif playlist_id:
+            filtros['playlist_id'] = playlist_id
+        elif usuario_objetivo_id:
+            filtros['usuario_objetivo_id'] = usuario_objetivo_id
+        
+        if Interaccion.objects.filter(**filtros).exists():
+            return Response({
+                'error': f'Ya has hecho {tipo} a este elemento'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Crear la interacción
+        interaccion_data = {
+            'usuario_id': usuario_id,
+            'tipo': tipo
+        }
+        
+        if cancion_id:
+            interaccion_data['cancion_id'] = cancion_id
+        elif playlist_id:
+            interaccion_data['playlist_id'] = playlist_id
+        elif usuario_objetivo_id:
+            interaccion_data['usuario_objetivo_id'] = usuario_objetivo_id
+        
+        interaccion = Interaccion.objects.create(**interaccion_data)
+        
+        # Actualizar contadores si es like o repost de canción
+        if tipo == 'like' and cancion_id:
+            cancion = Cancion.objects.get(pk=cancion_id)
+            cancion.likes_count += 1
+            cancion.save()
+        elif tipo == 'repost' and cancion_id:
+            cancion = Cancion.objects.get(pk=cancion_id)
+            cancion.reposts_count += 1
+            cancion.save()
+        
+        response_serializer = InteraccionDetailSerializer(interaccion)
+        
+        return Response({
+            'message': f'{tipo.capitalize()} registrado exitosamente',
+            'interaccion': response_serializer.data
+        }, status=status.HTTP_201_CREATED)
+
+class InteraccionDeleteView(generics.DestroyAPIView):
+    """
+    Endpoint para eliminar interacciones (unlike, unrepost, unfollow)
+    URL: /interacciones/{interaccion_id}/
+    """
+    queryset = Interaccion.objects.all()
+    permission_classes = [AllowAny]  # Cambiar a [IsAuthenticated] cuando esté listo
+    
+    def destroy(self, request, *args, **kwargs):
+        interaccion = self.get_object()
+        
+        # Verificar permisos (solo el usuario que hizo la interacción puede eliminarla)
+        if request.user.is_authenticated:
+            usuario_id = request.user.user_id
+        else:
+            usuario_id = request.data.get('usuario_id', 1)  # Para testing
+        
+        if interaccion.usuario_id != usuario_id:
+            return Response({
+                'error': 'No tienes permisos para eliminar esta interacción'
+            }, status=status.HTTP_403_FORBIDDEN)
+        
+        # Actualizar contadores antes de eliminar
+        if interaccion.tipo == 'like' and interaccion.cancion:
+            cancion = interaccion.cancion
+            cancion.likes_count = max(0, cancion.likes_count - 1)
+            cancion.save()
+        elif interaccion.tipo == 'repost' and interaccion.cancion:
+            cancion = interaccion.cancion
+            cancion.reposts_count = max(0, cancion.reposts_count - 1)
+            cancion.save()
+        
+        tipo = interaccion.tipo
+        interaccion.delete()
+        
+        return Response({
+            'message': f'{tipo.capitalize()} eliminado exitosamente'
+        }, status=status.HTTP_200_OK)
+
+class UsuarioInteraccionesView(generics.ListAPIView):
+    """
+    Endpoint para obtener todas las interacciones de un usuario
+    URL: /usuarios/{usuario_id}/interacciones/
+    """
+    serializer_class = InteraccionDetailSerializer
+    permission_classes = [AllowAny]
+    
+    def get_queryset(self):
+        usuario_id = self.kwargs['usuario_id']
+        tipo = self.request.query_params.get('tipo')  # Filtro opcional por tipo
+        
+        queryset = Interaccion.objects.filter(usuario_id=usuario_id)
+        
+        if tipo and tipo in ['like', 'repost', 'follow']:
+            queryset = queryset.filter(tipo=tipo)
+        
+        return queryset.order_by('-created_at')
+    
+    def list(self, request, *args, **kwargs):
+        usuario_id = self.kwargs['usuario_id']
+        queryset = self.get_queryset()
+        
+        # Separar por tipo
+        likes = queryset.filter(tipo='like')
+        reposts = queryset.filter(tipo='repost')
+        follows = queryset.filter(tipo='follow')
+        
+        serializer = self.get_serializer(queryset, many=True)
+        
+        return Response({
+            'usuario_id': usuario_id,
+            'total_interacciones': queryset.count(),
+            'estadisticas': {
+                'total_likes': likes.count(),
+                'total_reposts': reposts.count(),
+                'total_follows': follows.count()
+            },
+            'interacciones': serializer.data
+        }, status=status.HTTP_200_OK)
+
+class InteraccionToggleView(generics.GenericAPIView):
+    """
+    Endpoint para hacer toggle de interacciones (crear si no existe, eliminar si existe)
+    URL: /interacciones/toggle/
+    """
+    serializer_class = InteraccionCreateSerializer
+    permission_classes = [AllowAny]  # Cambiar a [IsAuthenticated] cuando esté listo
+    
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        
+        tipo = serializer.validated_data['tipo']
+        cancion_id = serializer.validated_data.get('cancion_id')
+        playlist_id = serializer.validated_data.get('playlist_id')
+        usuario_objetivo_id = serializer.validated_data.get('usuario_objetivo_id')
+        
+        # Obtener usuario_id
+        if request.user.is_authenticated:
+            usuario_id = request.user.user_id
+        else:
+            usuario_id = serializer.validated_data.get('usuario_id', 1)  # Para testing
+        
+        # Construir filtros
+        filtros = {'usuario_id': usuario_id, 'tipo': tipo}
+        
+        if cancion_id:
+            filtros['cancion_id'] = cancion_id
+        elif playlist_id:
+            filtros['playlist_id'] = playlist_id
+        elif usuario_objetivo_id:
+            filtros['usuario_objetivo_id'] = usuario_objetivo_id
+        
+        # Verificar si ya existe
+        try:
+            interaccion = Interaccion.objects.get(**filtros)
+            
+            # Ya existe, eliminarla
+            if interaccion.tipo == 'like' and interaccion.cancion:
+                cancion = interaccion.cancion
+                cancion.likes_count = max(0, cancion.likes_count - 1)
+                cancion.save()
+            elif interaccion.tipo == 'repost' and interaccion.cancion:
+                cancion = interaccion.cancion
+                cancion.reposts_count = max(0, cancion.reposts_count - 1)
+                cancion.save()
+            
+            interaccion.delete()
+            
+            return Response({
+                'message': f'{tipo.capitalize()} eliminado',
+                'accion': 'eliminado',
+                'activo': False
+            }, status=status.HTTP_200_OK)
+            
+        except Interaccion.DoesNotExist:
+            # No existe, crearla
+            interaccion_data = {
+                'usuario_id': usuario_id,
+                'tipo': tipo
+            }
+            
+            if cancion_id:
+                interaccion_data['cancion_id'] = cancion_id
+            elif playlist_id:
+                interaccion_data['playlist_id'] = playlist_id
+            elif usuario_objetivo_id:
+                interaccion_data['usuario_objetivo_id'] = usuario_objetivo_id
+            
+            interaccion = Interaccion.objects.create(**interaccion_data)
+            
+            # Actualizar contadores
+            if tipo == 'like' and cancion_id:
+                cancion = Cancion.objects.get(pk=cancion_id)
+                cancion.likes_count += 1
+                cancion.save()
+            elif tipo == 'repost' and cancion_id:
+                cancion = Cancion.objects.get(pk=cancion_id)
+                cancion.reposts_count += 1
+                cancion.save()
+            
+            response_serializer = InteraccionDetailSerializer(interaccion)
+            
+            return Response({
+                'message': f'{tipo.capitalize()} agregado',
+                'accion': 'creado',
+                'activo': True,
+                'interaccion': response_serializer.data
+            }, status=status.HTTP_201_CREATED)

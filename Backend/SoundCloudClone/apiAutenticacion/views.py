@@ -6,7 +6,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import logout, get_user_model
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from .serializers import UserRegisterSerializer, UserLoginSerializer, UserUpdateSerializer, UserSerializer
+from .serializers import UserRegisterSerializer, UserLoginSerializer, UserUpdateSerializer, UserSerializer, UserNombreSerializer
 
 # Usar el modelo de usuario configurado
 User = get_user_model()
@@ -92,3 +92,29 @@ class UserLogout(generics.GenericAPIView):
             return Response({'message': 'Logout exitoso'}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({'error': 'Error en logout'}, status=status.HTTP_400_BAD_REQUEST)
+
+class UserNombreView(generics.RetrieveAPIView):
+    """
+    Endpoint para obtener el nombre de un usuario por su ID
+    URL: /usuarios/{user_id}/nombre/
+    """
+    queryset = User.objects.all()
+    serializer_class = UserNombreSerializer
+    permission_classes = [AllowAny]
+    lookup_field = 'user_id'
+    
+    def retrieve(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()
+            serializer = self.get_serializer(instance)
+            
+            return Response({
+                'user_id': instance.user_id,
+                'nombre': instance.nombre,
+                'username': instance.username
+            }, status=status.HTTP_200_OK)
+            
+        except User.DoesNotExist:
+            return Response({
+                'error': 'Usuario no encontrado'
+            }, status=status.HTTP_404_NOT_FOUND)
