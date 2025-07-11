@@ -1,0 +1,90 @@
+.blockBusterContainer {
+  width: 100%;
+  padding: 2rem 5rem;
+  color: #ffffff;
+  position: relative;
+  overflow: hidden;
+}
+
+.blockBusterHeader {
+  margin-bottom: 2.5rem;
+  text-align: left;
+  position: relative;
+  z-index: 2;
+}
+
+.blockBusterHeader h1 {
+  font-size: 3rem;
+  font-weight: 800;
+  margin: 0;
+  color: #ffffff;
+  background: linear-gradient(135deg, #ff7b00, #ff4400, #ffaa00);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 0 30px rgba(255, 123, 0, 0.3);
+  letter-spacing: -0.02em;
+}
+
+.blockBusterContent {
+  display: flex;
+  gap: 2rem;
+  width: 100%;
+  position: relative;
+  z-index: 2;
+}
+
+/* Card hover effects */
+.blockBusterContent > * {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.blockBusterContent > *:hover {
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 20px rgba(255, 123, 0, 0.2);
+}
+
+/* Responsive design */
+@media (max-width: 1024px) {
+  .blockBusterContainer {
+    padding: 1.5rem 1rem;
+  }
+
+  .blockBusterHeader h1 {
+    font-size: 2.5rem;
+  }
+
+  .blockBusterContent {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .blockBusterContainer {
+    padding: 1rem 0.5rem;
+  }
+
+  .blockBusterHeader h1 {
+    font-size: 2.2rem;
+  }
+
+  .blockBusterHeader p {
+    font-size: 1.1rem;
+  }
+
+  .blockBusterContent {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .blockBusterHeader h1 {
+    font-size: 2rem;
+  }
+
+  .blockBusterContent {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}

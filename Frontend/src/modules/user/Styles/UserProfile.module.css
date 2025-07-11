@@ -1,0 +1,416 @@
+.profileContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #121212;
+  z-index: 1000;
+  overflow-y: auto;
+  padding: 0;
+}
+
+.profileContent {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+  min-height: 100vh;
+  position: relative;
+}
+
+.profileTopBar {
+  position: sticky;
+  top: 0;
+  background: rgba(18, 18, 18, 0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid #333333;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 10;
+}
+
+.profileTitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #fff;
+  margin: 0;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #999;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.closeButton:hover {
+  background-color: #333333;
+  color: #fff;
+}
+
+.profileHeader {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid #333333;
+}
+
+.avatarSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff5500, #ff8800);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: white;
+  box-shadow: 0 4px 15px rgba(255, 85, 0, 0.3);
+}
+
+.changeAvatarBtn {
+  background: none;
+  border: 2px solid #ff5500;
+  color: #ff5500;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.changeAvatarBtn:hover {
+  background-color: #ff5500;
+  color: white;
+}
+
+.headerInfo {
+  flex: 1;
+  text-align: left;
+}
+
+.headerInfo h1 {
+  color: #fff;
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.username {
+  color: #666;
+  font-size: 1.1rem;
+  margin-bottom: 0.25rem;
+}
+
+.email {
+  color: #888;
+  font-size: 1rem;
+}
+
+.profileActions {
+  margin-bottom: 2rem;
+}
+
+.editButton {
+  background-color: #ff5500;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.editButton:hover {
+  background-color: #e64800;
+}
+
+.actionButtons {
+  display: flex;
+  gap: 1rem;
+}
+
+.cancelButton {
+  background: none;
+  border: 2px solid #ccc;
+  color: #666;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cancelButton:hover {
+  border-color: #999;
+  color: #333;
+}
+
+.saveButton {
+  background-color: #ff5500;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.saveButton:hover:not(:disabled) {
+  background-color: #e64800;
+}
+
+.saveButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.editForm {
+  background-color: #121212;
+  padding: 2rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+}
+
+.editForm h3 {
+  color: #333;
+  margin-bottom: 1.5rem;
+  font-size: 1.3rem;
+}
+
+.inputRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.inputGroup label {
+  color: #555;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.inputGroup input {
+  padding: 0.75rem;
+  border: 2px solid #e1e1e1;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.2s ease;
+  background-color: #121212;
+}
+
+.inputGroup input:focus {
+  outline: none;
+  border-color: #ff5500;
+  box-shadow: 0 0 0 3px rgba(255, 85, 0, 0.1);
+}
+
+.inputGroup input.inputError {
+  border-color: #e53e3e;
+}
+
+.errorText {
+  color: #e53e3e;
+  font-size: 0.8rem;
+}
+
+.errorMessage {
+  background-color: #fed7d7;
+  color: #c53030;
+  padding: 0.75rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.profileStats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  color: #fff;
+  background-color: #232323;
+  border-radius: 12px;
+}
+
+.statItem {
+  text-align: center;
+}
+
+.statNumber {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #fff;
+}
+
+.statLabel {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.profileSections {
+  margin-bottom: 2rem;
+}
+
+.sectionAdd {
+  margin-bottom: 2rem;
+}
+
+.sectionAdd h3 {
+  color: #333;
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #ff5500;
+  display: inline-block;
+}
+
+.emptyMessage {
+  color: #888;
+  font-style: italic;
+  padding: 2rem;
+  text-align: center;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+}
+
+.dangerZone {
+  border-top: 1px solid #e1e1e1;
+  padding-top: 2rem;
+}
+
+.logoutButton {
+  background-color: #e53e3e;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.logoutButton:hover {
+  background-color: #c53030;
+}
+
+.loadingMessage {
+  text-align: center;
+  padding: 3rem;
+  color: #666;
+  font-size: 1.1rem;
+}
+
+/* Grillas para tracks y playlists */
+.tracksGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.playlistsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+@media (max-width: 768px) {
+  .profileContent {
+    padding: 1rem;
+  }
+
+  .profileTopBar {
+    padding: 1rem;
+  }
+
+  .profileHeader {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+  }
+
+  .inputRow {
+    grid-template-columns: 1fr;
+  }
+
+  .profileStats {
+    grid-template-columns: repeat(3, 1fr);
+    padding: 1rem;
+  }
+
+  .editForm {
+    padding: 1rem;
+  }
+
+  .tracksGrid,
+  .playlistsGrid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .profileContent {
+    padding: 1rem;
+  }
+
+  .profileTopBar {
+    padding: 0.75rem 1rem;
+  }
+
+  .profileTitle {
+    font-size: 1.25rem;
+  }
+
+  .avatar {
+    width: 100px;
+    height: 100px;
+    font-size: 2rem;
+  }
+
+  .headerInfo h1 {
+    font-size: 1.5rem;
+  }
+
+  .actionButtons {
+    flex-direction: column;
+  }
+
+  .profileStats {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+}

@@ -1,0 +1,339 @@
+/* AudioCard.module.css */
+.audioCard {
+  padding: 16px 24px;
+  width: 100%;
+  color: #ffffff;       
+  width: 80%;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.userAvatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff5500, #ff8800);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: white;
+}
+
+.userInfo {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  text-align: left;
+}
+
+.userName {
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.userName:hover {
+  color: #ff5500;
+}
+
+.timeAgo {
+  color: #999999;
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+.tags {
+  display: flex;
+  gap: 8px;
+}
+
+.tag {
+  background-color: #333333;
+  color: #cccccc;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.mainContent {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.albumCover {
+  flex-shrink: 0;
+}
+
+.albumCover img {
+  width: 164px;
+  height: 164px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.trackInfo {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.playSection {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.playButton {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: #ff5500;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+}
+
+.playButton:hover {
+  background-color: #ff6600;
+}
+
+.playButton img {
+  width: 16px;
+  height: 16px;
+  filter: invert(1);
+}
+
+.trackDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: left;
+}
+
+.trackSection {
+  width: 100%
+  ;
+}
+
+.trackSection hr {
+  width: 80%;
+  border: 0.5px solid rgba(255, 255, 255, 0.15);
+  margin: 10px 0;
+}
+
+.artistName {
+  color: #cccccc;
+  font-size: 14px;
+  font-weight: 400;
+  margin: 0;
+}
+
+.trackTitle {
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.waveformPlaceholder {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.waveformBars {
+  display: flex;
+  align-items: end;
+  gap: 1px;
+  height: 80px;
+  width: 100%;
+}
+
+.waveformBar {
+  width: 2px;
+  background-color: #555555;
+  transition: background-color 0.2s ease;
+}
+
+.timeStamps {
+  display: flex;
+  justify-content: space-between;
+  color: #999999;
+  font-size: 12px;
+}
+
+.commentSection {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.commentAvatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.commentForm {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.commentInput {
+  width: 100%;
+  background-color: #333333;
+  border: 1px solid #444444;
+  border-radius: 4px;
+  padding: 8px 40px 8px 12px;
+  color: #ffffff;
+  font-size: 14px;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.commentInput::placeholder {
+  color: #999999;
+}
+
+.commentInput:focus {
+  background-color: #555555;
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.sendButton {
+  position: absolute;
+  right: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.sendButton:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.sendButton img {
+  width: 16px;
+  height: 16px;
+  filter: invert(1);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.actionButton {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  color: #999999;
+  cursor: pointer;
+  padding: 6px 8px;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.actionButton:hover {
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.actionButton.liked {
+  color: #ff5500;
+}
+
+.actionButton.reposted {
+  color: #ff5500;
+}
+
+.actionButton img {
+  width: 16px;
+  height: 16px;
+  filter: invert(0.6);
+  transition: filter 0.2s ease;
+}
+
+.actionButton:hover img {
+  filter: invert(1);
+}
+
+.actionButton.liked img,
+.actionButton.reposted img {
+  filter: invert(0.4) sepia(1) saturate(5) hue-rotate(15deg);
+}
+
+.stats {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  color: #999999;
+  font-size: 12px;
+}
+
+.plays,
+.comments {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.playIcon,
+.commentIcon {
+  font-size: 10px;
+}
+
+@media (max-width: 768px) {
+  .audioCard {
+    padding: 12px 16px;
+  }
+  
+  .mainContent {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .albumCover img {
+    width: 100%;
+    height: 200px;
+  }
+  
+  .actions {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  
+  .stats {
+    margin-left: 0;
+    width: 100%;
+    justify-content: space-between;
+  }
+}

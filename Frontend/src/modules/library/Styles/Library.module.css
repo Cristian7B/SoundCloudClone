@@ -1,0 +1,27 @@
+.libraryContainer {
+  width: 65%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.libraryHeader {
+  text-align: left;
+  width: 81%;
+  font-size: 1.5rem;
+  color: #fff;
+}
+
+.trackSection {
+  width: 86%;
+  margin-bottom: 1rem;
+  padding: 1rem 0;
+}
+
+.divider {
+  width: 80%;
+  border: none;
+  border-top: 1px solid #333333;
+  margin: 1rem 24px;
+}

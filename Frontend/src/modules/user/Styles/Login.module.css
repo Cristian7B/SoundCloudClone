@@ -1,0 +1,145 @@
+.loginContainer {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.loginHeader {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.loginHeader h2 {
+  color: #fff;
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.loginHeader p {
+  color: #999;
+  font-size: 0.9rem;
+}
+
+.loginForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.inputGroup input {
+  padding: 0.75rem;
+  border: 2px solid #333333;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.2s ease;
+  background-color: #121212;
+  color: #fff;
+}
+
+.inputGroup input:focus {
+  outline: none;
+  border-color: #ff5500;
+  box-shadow: 0 0 0 3px rgba(255, 85, 0, 0.1);
+}
+
+.inputGroup input.inputError {
+  border-color: #ff5555;
+}
+
+.errorText {
+  color: #ff5555;
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+}
+
+.errorMessage {
+  background-color: #331111;
+  color: #ff5555;
+  padding: 0.75rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.submitButton {
+  background-color: #ff5500;
+  color: white;
+  border: none;
+  padding: 0.875rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  margin-top: 1rem;
+}
+
+.submitButton:hover:not(:disabled) {
+  background-color: #e64800;
+}
+
+.submitButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.forgotPassword {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.forgotLink {
+  color: #999;
+  font-size: 0.9rem;
+  text-decoration: none;
+}
+
+.forgotLink:hover {
+  color: #ff5500;
+  text-decoration: underline;
+}
+
+.switchAuth {
+  text-align: center;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #333333;
+}
+
+.switchAuth p {
+  color: #999;
+  font-size: 0.9rem;
+}
+
+.switchButton {
+  background: none;
+  border: none;
+  color: #ff5500;
+  cursor: pointer;
+  font-size: 0.9rem;
+  text-decoration: underline;
+  padding: 0;
+}
+
+.switchButton:hover {
+  color: #e64800;
+}
+
+@media (max-width: 480px) {
+  .loginContainer {
+    padding: 1rem;
+  }
+
+  .loginHeader h2 {
+    font-size: 1.5rem;
+  }
+}

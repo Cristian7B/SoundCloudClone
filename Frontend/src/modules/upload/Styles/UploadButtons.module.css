@@ -1,0 +1,68 @@
+/* Upload Buttons Styles */
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.uploadButton {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: none;
+  font-family: "Inter";
+color: #cccccc;
+text-decoration: none;
+font-size: 14px;
+font-weight: 400;
+transition: color 0.2s ease;
+cursor: pointer;
+  justify-content: center;
+  background-color: transparent;
+}
+
+.uploadButton:hover {
+    color: #fff;
+}
+
+.icon {
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .buttonGroup {
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .uploadButton {
+    width: 100%;
+    padding: 14px 24px;
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 16px;
+  }
+
+  .uploadButton {
+    padding: 12px 20px;
+    font-size: 14px;
+    min-width: auto;
+  }
+}

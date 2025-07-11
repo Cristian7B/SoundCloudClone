@@ -1,0 +1,134 @@
+.mixesContainer {
+  width: 100%;
+  padding: 2rem 5rem;
+  color: #ffffff;
+  position: relative;
+  overflow: hidden;
+top: -180px;
+}
+
+.mixesHeader {
+  margin-bottom: 2.5rem;
+  text-align: left;
+  position: relative;
+  z-index: 2;
+}
+
+.mixesHeader h1 {
+  font-size: 3rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+  color: #ffffff;
+  background: linear-gradient(135deg, #00ffff, #00bfff, #87ceeb);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
+  letter-spacing: -0.02em;
+  position: relative;
+}
+
+.mixesHeader h1::after {
+  content: "🎧";
+  position: absolute;
+  right: -50px;
+  top: -10px;
+  font-size: 1.5rem;
+  opacity: 0.6;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.9;
+  }
+}
+
+.mixesContent {
+  display: flex;
+  gap: 2rem;
+  width: 100%;
+  position: relative;
+  z-index: 2;
+      top: -20px;
+}
+/* Card hover effects */
+.mixesContent > * {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mixesContent > *:hover {
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 25px rgba(0, 255, 255, 0.3),
+    0 0 50px rgba(0, 191, 255, 0.1);
+}
+
+/* Responsive design */
+@media (max-width: 1024px) {
+  .mixesContainer {
+    padding: 1.5rem 1rem;
+  }
+
+  .mixesHeader h1 {
+    font-size: 2.5rem;
+  }
+
+  .mixesHeader h1::after {
+    right: -40px;
+    font-size: 1.3rem;
+  }
+
+  .mixesContent {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .mixesContainer {
+    padding: 1rem 0.5rem;
+  }
+
+  .mixesHeader h1 {
+    font-size: 2.2rem;
+  }
+
+  .mixesHeader h1::after {
+    right: -35px;
+    font-size: 1.2rem;
+  }
+
+  .mixesHeader p {
+    font-size: 1.1rem;
+  }
+
+  .mixesContent {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .mixesHeader h1 {
+    font-size: 2rem;
+  }
+
+  .mixesHeader h1::after {
+    right: -30px;
+    font-size: 1rem;
+  }
+
+  .mixesContent {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .mixesContent > *:hover {
+    transform: translateY(-6px) scale(1.01);
+  }
+}

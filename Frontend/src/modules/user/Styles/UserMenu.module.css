@@ -1,0 +1,147 @@
+.userMenuContainer {
+  position: relative;
+}
+
+.authButtons {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.loginButton {
+  color: #cccccc;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 400;
+  transition: color 0.2s ease;
+  cursor: pointer;
+}
+
+.loginButton:hover {
+  color: #fff;
+}
+
+.registerButton {
+  background-color: #ff5500;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.registerButton:hover {
+  background-color: #e64800;
+}
+
+.userInfo {
+  position: relative;
+}
+
+.userAvatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff5500, #ff8800);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: white;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.userAvatar:hover {
+  transform: scale(1.05);
+}
+
+.dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  border: 1px solid #e1e1e1;
+  min-width: 220px;
+  z-index: 1000;
+  margin-top: 0.5rem;
+}
+
+.dropdownHeader {
+  padding: 1rem;
+  border-bottom: 1px solid #e1e1e1;
+}
+
+.userDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.userName {
+  font-weight: 600;
+  color: #333;
+  font-size: 0.9rem;
+}
+
+.userEmail {
+  color: #666;
+  font-size: 0.8rem;
+}
+
+.dropdownMenu {
+  padding: 0.5rem 0;
+}
+
+.menuItem {
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 0.75rem 1rem;
+  font-size: 0.9rem;
+  color: #333;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.menuItem:hover {
+  background-color: #f5f5f5;
+}
+
+.logoutItem {
+  color: #e53e3e;
+}
+
+.logoutItem:hover {
+  background-color: #fee;
+}
+
+.divider {
+  height: 1px;
+  background-color: #e1e1e1;
+  margin: 0.5rem 0;
+}
+
+@media (max-width: 768px) {
+  .dropdown {
+    right: -1rem;
+    min-width: 200px;
+  }
+
+  .authButtons {
+    gap: 0.5rem;
+  }
+
+  .loginButton,
+  .registerButton {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+  }
+}

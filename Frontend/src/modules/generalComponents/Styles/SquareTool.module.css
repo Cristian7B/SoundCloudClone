@@ -1,0 +1,24 @@
+.squareTool {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 75px;
+    padding: 10px 0px 0px 0px;
+    position: relative;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+}
+
+.squareTool h5 {
+    font-size: 11px;
+    font-weight: 400;
+    text-wrap: wrap;
+    line-height: 0px;
+}
+
+.iconMas {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+}

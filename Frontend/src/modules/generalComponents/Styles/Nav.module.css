@@ -1,0 +1,162 @@
+/* Nav.module.css */
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 40px 8px 40px;
+  height: 46px;
+  width: 1260px;
+}
+
+.leftSection {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.logo:hover {
+  opacity: 0.8;
+}
+
+.logo .img {
+  width: 134px;
+  height: 24px;
+}
+
+.menu {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 24px;
+}
+
+.menu li {
+  color: #fff;
+  font-size: 16px;
+  font-weight: 400;
+  cursor: pointer;
+  padding: 8px 0;
+  transition: color 0.2s ease;
+}
+
+.menu li:hover {
+  color: #ff5500;
+}
+
+.menu li:first-child {
+  color: #fff;
+  font-weight: 500;
+  border-bottom: 2px solid #ff5500;
+}
+
+.menu li.active {
+  color: #fff;
+  font-weight: 500;
+  border-bottom: 2px solid #ff5500;
+}
+
+.rightSection {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.rightSection a {
+  color: #cccccc;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 400;
+  transition: color 0.2s ease;
+}
+
+.rightSection a:hover {
+  color: #fff;
+}
+
+.proLink {
+  background: linear-gradient(45deg, #ff5500, #ff7700);
+  color: #fff !important;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.proLink:hover {
+  background: linear-gradient(45deg, #ff6600, #ff8800);
+}
+
+.profileCircle {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background-color: #4a4a4a;
+  border-radius: 50px;
+  padding: 4px 8px 4px 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.profileCircle:hover {
+  background-color: #555555;
+}
+
+.profileCircle .img:first-child {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: #666666;
+}
+
+.profileCircle .img:last-child {
+  width: 12px;
+  height: 12px;
+  filter: invert(1);
+}
+
+.notificationButton,
+.messagesButton,
+.menuButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.notificationButton:hover,
+.messagesButton:hover,
+.menuButton:hover {
+  background-color: #444444;
+}
+
+.notificationButton .img,
+.messagesButton .img,
+.menuButton .img {
+  width: 16px;
+  height: 16px;
+  filter: invert(1);
+}
+
+@media (max-width: 768px) {
+  .nav {
+    padding: 8px 16px;
+  }
+
+  .menu {
+    display: none;
+  }
+
+  .rightSection a:not(.proLink) {
+    display: none;
+  }
+}
