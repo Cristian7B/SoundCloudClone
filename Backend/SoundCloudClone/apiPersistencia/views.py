@@ -1,3 +1,32 @@
+"""
+API views for music content persistence and management.
+
+This module provides comprehensive API endpoints for managing the core music content
+of the SoundCloud clone including songs, playlists, albums, and user interactions.
+It handles CRUD operations, content relationships, and user-generated content management.
+
+Classes:
+    CancionListCreateView: List and create songs
+    CancionDetailView: Retrieve, update, delete individual songs
+    PlaylistListCreateView: List and create playlists
+    PlaylistDetailView: Retrieve, update, delete individual playlists
+    AlbumListCreateView: List and create albums
+    AlbumDetailView: Retrieve, update, delete individual albums
+    [... and many more specialized views for content management]
+
+Features:
+    - Complete CRUD operations for music content
+    - User ownership validation and permissions
+    - Playlist-song relationship management
+    - User interaction tracking (likes, reposts, follows)
+    - Content search and filtering capabilities
+    - Statistics and analytics for user content
+
+@author: Development Team
+@version: 1.0
+@since: 2024
+"""
+
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -10,7 +39,28 @@ from .serializers import (
     InteraccionDetailSerializer
 )
 
+
 class CancionListCreateView(generics.ListCreateAPIView):
+    """
+    API view for listing all songs and creating new songs.
+    
+    Provides endpoints for retrieving all available songs in the platform
+    and for uploading new music content. Supports both authenticated and
+    anonymous access with appropriate permission handling.
+    
+    Endpoints:
+        GET /api/contenido/canciones/ - List all songs
+        POST /api/contenido/canciones/ - Create new song
+    
+    Permissions:
+        - AllowAny: Currently allows public access for development
+        - TODO: Change to IsAuthenticated for production song uploads
+    
+    Create Process:
+        - Validates song data using CancionCreateSerializer
+        - Associates song with authenticated user or default test user
+        - Returns success message with complete song details
+    """
     queryset = Cancion.objects.all()
     serializer_class = CancionSerializer
     permission_classes = [AllowAny]  # Cambiar a [IsAuthenticated] cuando esté listo
@@ -114,7 +164,6 @@ class AlbumCancionesView(generics.ListAPIView):
         queryset = self.get_queryset()
         album_id = self.kwargs['pk']
         
-        # Verificar que el álbum existe
         try:
             album = Album.objects.get(pk=album_id)
         except Album.DoesNotExist:
@@ -155,7 +204,6 @@ class PlaylistCancionesView(generics.ListAPIView):
     def list(self, request, *args, **kwargs):
         playlist_id = self.kwargs['pk']
         
-        # Verificar que la playlist existe
         try:
             playlist = Playlist.objects.get(pk=playlist_id)
         except Playlist.DoesNotExist:
@@ -163,7 +211,6 @@ class PlaylistCancionesView(generics.ListAPIView):
                 'error': 'Playlist no encontrada'
             }, status=status.HTTP_404_NOT_FOUND)
         
-        # Verificar si la playlist es pública o si el usuario tiene acceso
         if not playlist.es_publica:
             if not request.user.is_authenticated or request.user.user_id != playlist.usuario_id:
                 return Response({
@@ -199,7 +246,6 @@ class CancionBusquedaView(generics.ListAPIView):
         if not query:
             return Cancion.objects.none()
         
-        # Búsqueda en título, descripción y género
         return Cancion.objects.filter(
             Q(titulo__icontains=query) |
             Q(descripcion__icontains=query) |
@@ -240,14 +286,12 @@ class PlaylistAgregarCancionView(generics.CreateAPIView):
     def create(self, request, *args, **kwargs):
         playlist_id = self.kwargs['pk']
         
-        # Validar datos con el serializer
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         
         cancion_id = serializer.validated_data['cancion_id']
         orden = serializer.validated_data.get('orden')
         
-        # Verificar que la playlist existe
         try:
             playlist = Playlist.objects.get(pk=playlist_id)
         except Playlist.DoesNotExist:
@@ -255,10 +299,8 @@ class PlaylistAgregarCancionView(generics.CreateAPIView):
                 'error': 'Playlist no encontrada'
             }, status=status.HTTP_404_NOT_FOUND)
         
-        # Obtener canción (ya validada por el serializer)
         cancion = Cancion.objects.get(pk=cancion_id)
         
-        # Verificar permisos (solo el creador puede modificar la playlist)
         if request.user.is_authenticated:
             usuario_id = request.user.user_id
         else:
@@ -269,18 +311,15 @@ class PlaylistAgregarCancionView(generics.CreateAPIView):
                 'error': 'No tienes permisos para modificar esta playlist'
             }, status=status.HTTP_403_FORBIDDEN)
         
-        # Verificar si la canción ya está en la playlist
         if PlaylistCancion.objects.filter(playlist=playlist, cancion=cancion).exists():
             return Response({
                 'error': 'La canción ya está en la playlist'
             }, status=status.HTTP_400_BAD_REQUEST)
         
-        # Calcular el orden (último + 1 si no se especifica)
         if orden is None:
             ultimo_orden = PlaylistCancion.objects.filter(playlist=playlist).count()
             orden = ultimo_orden
         
-        # Crear la relación
         playlist_cancion = PlaylistCancion.objects.create(
             playlist=playlist,
             cancion=cancion,
@@ -305,7 +344,6 @@ class PlaylistEliminarCancionView(generics.DestroyAPIView):
         playlist_id = self.kwargs['playlist_pk']
         cancion_id = self.kwargs['cancion_pk']
         
-        # Verificar que la playlist existe
         try:
             playlist = Playlist.objects.get(pk=playlist_id)
         except Playlist.DoesNotExist:
@@ -313,7 +351,6 @@ class PlaylistEliminarCancionView(generics.DestroyAPIView):
                 'error': 'Playlist no encontrada'
             }, status=status.HTTP_404_NOT_FOUND)
         
-        # Verificar permisos
         if request.user.is_authenticated:
             usuario_id = request.user.user_id
         else:
@@ -324,7 +361,6 @@ class PlaylistEliminarCancionView(generics.DestroyAPIView):
                 'error': 'No tienes permisos para modificar esta playlist'
             }, status=status.HTTP_403_FORBIDDEN)
         
-        # Buscar y eliminar la relación
         try:
             playlist_cancion = PlaylistCancion.objects.get(
                 playlist_id=playlist_id, 
@@ -359,7 +395,6 @@ class PlaylistReordenarCancionesView(generics.UpdateAPIView):
                 'formato': [{"cancion_id": 1, "orden": 0}, {"cancion_id": 3, "orden": 1}]
             }, status=status.HTTP_400_BAD_REQUEST)
         
-        # Verificar que la playlist existe
         try:
             playlist = Playlist.objects.get(pk=playlist_id)
         except Playlist.DoesNotExist:
@@ -367,7 +402,6 @@ class PlaylistReordenarCancionesView(generics.UpdateAPIView):
                 'error': 'Playlist no encontrada'
             }, status=status.HTTP_404_NOT_FOUND)
         
-        # Verificar permisos
         if request.user.is_authenticated:
             usuario_id = request.user.user_id
         else:
@@ -378,7 +412,6 @@ class PlaylistReordenarCancionesView(generics.UpdateAPIView):
                 'error': 'No tienes permisos para modificar esta playlist'
             }, status=status.HTTP_403_FORBIDDEN)
         
-        # Actualizar el orden de las canciones
         actualizadas = 0
         errores = []
         
@@ -437,18 +470,14 @@ class UsuarioPlaylistsView(generics.ListAPIView):
         usuario_id = self.kwargs['usuario_id']
         queryset = self.get_queryset()
         
-        # Verificar si se deben mostrar playlists privadas
         mostrar_privadas = False
         if request.user.is_authenticated and request.user.user_id == usuario_id:
             mostrar_privadas = True
-        
-        # Filtrar playlists según permisos
         if not mostrar_privadas:
             queryset = queryset.filter(es_publica=True)
         
         serializer = self.get_serializer(queryset, many=True)
         
-        # Separar playlists públicas y privadas para la respuesta
         playlists_publicas = []
         playlists_privadas = []
         
@@ -467,7 +496,6 @@ class UsuarioPlaylistsView(generics.ListAPIView):
             }
         }
         
-        # Solo mostrar playlists privadas si el usuario es el propietario
         if mostrar_privadas and playlists_privadas:
             response_data['playlists_privadas'] = {
                 'total': len(playlists_privadas),
@@ -492,15 +520,12 @@ class UsuarioCancionesView(generics.ListAPIView):
         usuario_id = self.kwargs['usuario_id']
         queryset = self.get_queryset()
         
-        # Obtener estadísticas adicionales
         total_reproducciones = sum(cancion.reproducciones for cancion in queryset)
         total_likes = sum(cancion.likes_count for cancion in queryset)
         total_reposts = sum(cancion.reposts_count for cancion in queryset)
         
-        # Obtener géneros únicos
         generos = list(set(cancion.genero for cancion in queryset if cancion.genero))
         
-        # Obtener álbumes del usuario
         albums_ids = list(set(cancion.album_id for cancion in queryset if cancion.album_id))
         albums = Album.objects.filter(album_id__in=albums_ids) if albums_ids else []
         
@@ -536,19 +561,16 @@ class InteraccionCreateView(generics.CreateAPIView):
         playlist_id = serializer.validated_data.get('playlist_id')
         usuario_objetivo_id = serializer.validated_data.get('usuario_objetivo_id')
         
-        # Obtener usuario_id
         if request.user.is_authenticated:
             usuario_id = request.user.user_id
         else:
             usuario_id = serializer.validated_data.get('usuario_id', 1)  # Para testing
         
-        # Validar que el usuario no se siga a sí mismo
         if tipo == 'follow' and usuario_id == usuario_objetivo_id:
             return Response({
                 'error': 'No puedes seguirte a ti mismo'
             }, status=status.HTTP_400_BAD_REQUEST)
         
-        # Verificar si la interacción ya existe
         filtros = {'usuario_id': usuario_id, 'tipo': tipo}
         
         if cancion_id:
@@ -563,7 +585,6 @@ class InteraccionCreateView(generics.CreateAPIView):
                 'error': f'Ya has hecho {tipo} a este elemento'
             }, status=status.HTTP_400_BAD_REQUEST)
         
-        # Crear la interacción
         interaccion_data = {
             'usuario_id': usuario_id,
             'tipo': tipo
@@ -578,7 +599,6 @@ class InteraccionCreateView(generics.CreateAPIView):
         
         interaccion = Interaccion.objects.create(**interaccion_data)
         
-        # Actualizar contadores si es like o repost de canción
         if tipo == 'like' and cancion_id:
             cancion = Cancion.objects.get(pk=cancion_id)
             cancion.likes_count += 1
@@ -606,7 +626,6 @@ class InteraccionDeleteView(generics.DestroyAPIView):
     def destroy(self, request, *args, **kwargs):
         interaccion = self.get_object()
         
-        # Verificar permisos (solo el usuario que hizo la interacción puede eliminarla)
         if request.user.is_authenticated:
             usuario_id = request.user.user_id
         else:
@@ -617,7 +636,6 @@ class InteraccionDeleteView(generics.DestroyAPIView):
                 'error': 'No tienes permisos para eliminar esta interacción'
             }, status=status.HTTP_403_FORBIDDEN)
         
-        # Actualizar contadores antes de eliminar
         if interaccion.tipo == 'like' and interaccion.cancion:
             cancion = interaccion.cancion
             cancion.likes_count = max(0, cancion.likes_count - 1)
@@ -657,7 +675,6 @@ class UsuarioInteraccionesView(generics.ListAPIView):
         usuario_id = self.kwargs['usuario_id']
         queryset = self.get_queryset()
         
-        # Separar por tipo
         likes = queryset.filter(tipo='like')
         reposts = queryset.filter(tipo='repost')
         follows = queryset.filter(tipo='follow')
@@ -681,7 +698,7 @@ class InteraccionToggleView(generics.GenericAPIView):
     URL: /interacciones/toggle/
     """
     serializer_class = InteraccionCreateSerializer
-    permission_classes = [AllowAny]  # Cambiar a [IsAuthenticated] cuando esté listo
+    permission_classes = [AllowAny]  
     
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -692,13 +709,11 @@ class InteraccionToggleView(generics.GenericAPIView):
         playlist_id = serializer.validated_data.get('playlist_id')
         usuario_objetivo_id = serializer.validated_data.get('usuario_objetivo_id')
         
-        # Obtener usuario_id
         if request.user.is_authenticated:
             usuario_id = request.user.user_id
         else:
             usuario_id = serializer.validated_data.get('usuario_id', 1)  # Para testing
         
-        # Construir filtros
         filtros = {'usuario_id': usuario_id, 'tipo': tipo}
         
         if cancion_id:
@@ -708,7 +723,6 @@ class InteraccionToggleView(generics.GenericAPIView):
         elif usuario_objetivo_id:
             filtros['usuario_objetivo_id'] = usuario_objetivo_id
         
-        # Verificar si ya existe
         try:
             interaccion = Interaccion.objects.get(**filtros)
             
@@ -731,7 +745,6 @@ class InteraccionToggleView(generics.GenericAPIView):
             }, status=status.HTTP_200_OK)
             
         except Interaccion.DoesNotExist:
-            # No existe, crearla
             interaccion_data = {
                 'usuario_id': usuario_id,
                 'tipo': tipo
@@ -746,7 +759,6 @@ class InteraccionToggleView(generics.GenericAPIView):
             
             interaccion = Interaccion.objects.create(**interaccion_data)
             
-            # Actualizar contadores
             if tipo == 'like' and cancion_id:
                 cancion = Cancion.objects.get(pk=cancion_id)
                 cancion.likes_count += 1

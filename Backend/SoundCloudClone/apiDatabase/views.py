@@ -1,3 +1,30 @@
+"""
+API views for database operations and system administration.
+
+This module provides specialized database operations, user management utilities,
+and system administration functions for the SoundCloud clone. It includes
+alternative endpoints for content creation and user information management.
+
+Classes:
+    RegistroCancionView: Alternative song registration endpoint
+    RegistroPlayListView: Alternative playlist creation endpoint
+    GetUserInfo: User information retrieval for authenticated users
+    UpdateUserInfo: User profile update functionality
+    LoginUser: Alternative login endpoint
+    CheckUserExist: User existence verification endpoint
+
+Features:
+    - Alternative content creation workflows
+    - User profile management utilities
+    - Authentication helper endpoints
+    - Database operation utilities
+    - System administration functions
+
+@author: Development Team
+@version: 1.0
+@since: 2024
+"""
+
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -9,7 +36,24 @@ from apiPersistencia.models import Cancion, Playlist
 
 User = get_user_model()
 
+
 class RegistroCancionView(generics.CreateAPIView):
+    """
+    Alternative API view for song registration with authenticated users.
+    
+    Provides an alternative endpoint for creating songs that requires
+    authentication and automatically associates songs with the authenticated user.
+    
+    Endpoint: POST /api/database/register-song/
+    
+    Permissions:
+        - IsAuthenticated: Only authenticated users can upload songs
+    
+    Features:
+        - Automatic user association for uploaded content
+        - Comprehensive error handling and validation
+        - Integration with main persistence layer
+    """
     permission_classes = [IsAuthenticated]
     
     def post(self, request):

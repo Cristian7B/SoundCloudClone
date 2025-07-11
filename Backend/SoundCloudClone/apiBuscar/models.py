@@ -19,7 +19,7 @@ class IndicesBusqueda(models.Model):
 
 class HistorialBusqueda(models.Model):
     """Historial de búsquedas por usuario"""
-    usuario_id = models.IntegerField()  # Referencia al usuario por ID
+    usuario_id = models.IntegerField() 
     termino_busqueda = models.CharField(max_length=255)
     resultados_encontrados = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
