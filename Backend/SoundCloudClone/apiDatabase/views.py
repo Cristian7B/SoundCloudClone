@@ -10,6 +10,22 @@ from apiPersistencia.models import Cancion, Playlist
 User = get_user_model()
 
 class RegistroCancionView(generics.CreateAPIView):
+    """
+        Vista para registrar nuevas canciones.
+
+        Endpoint: POST /database/cancion/
+
+        Campos requeridos:
+            - titulo: Título de la canción
+            - archivo_url: URL del archivo de audio
+
+        Retorna:
+            - Mensaje de éxito
+            - Datos de la canción registrada
+
+        Permisos: Usuario autenticado
+        Requiere: Token JWT válido
+        """
     permission_classes = [IsAuthenticated]
     
     def post(self, request):
@@ -27,6 +43,21 @@ class RegistroCancionView(generics.CreateAPIView):
         }, status=status.HTTP_400_BAD_REQUEST)
 
 class RegistroPlayListView(generics.CreateAPIView):
+    """
+        Vista para crear nuevas playlists.
+
+        Endpoint: POST /database/playlist/
+
+        Campos requeridos:
+            - titulo: Nombre de la playlist
+
+        Retorna:
+            - Mensaje de éxito
+            - Datos de la playlist creada
+
+        Permisos: Usuario autenticado
+        Requiere: Token JWT válido
+    """
     permission_classes = [IsAuthenticated]
     
     def post(self, request):
@@ -44,6 +75,22 @@ class RegistroPlayListView(generics.CreateAPIView):
         }, status=status.HTTP_400_BAD_REQUEST)
 
 class GetUserInfo(generics.RetrieveAPIView):
+    """
+        Vista para obtener información del usuario.
+
+        Endpoint: GET /database/user/info/
+
+        Retorna:
+            - user_id: ID del usuario
+            - email: Correo electrónico
+            - username: Nombre de usuario
+            - nombre: Nombre completo
+            - created_at: Fecha de creación
+
+        Permisos: Usuario autenticado
+        Requiere: Token JWT válido
+    """
+
     permission_classes = [IsAuthenticated]
     
     def get(self, request):
@@ -63,6 +110,19 @@ class GetUserInfo(generics.RetrieveAPIView):
             }, status=status.HTTP_404_NOT_FOUND)
 
 class UpdateUserInfo(generics.UpdateAPIView):
+    """
+        Vista para actualizar datos del usuario.
+
+        Endpoint: PATCH /database/user/update/
+
+        Campos modificables:
+            - username: Nombre de usuario
+            - email: Correo electrónico
+            - nombre: Nombre completo
+
+        Permisos: Usuario autenticado
+        Requiere: Token JWT válido
+    """
     permission_classes = [IsAuthenticated]
     serializer_class = UserUpdateSerializer
     
@@ -73,6 +133,21 @@ class UpdateUserInfo(generics.UpdateAPIView):
         return self.partial_update(request, *args, **kwargs)
 
 class LoginUser(generics.GenericAPIView):
+    """
+        Vista para autenticar usuarios.
+
+        Endpoint: POST /database/login/
+
+        Campos requeridos:
+            - email: Correo electrónico
+            - password: Contraseña
+
+        Retorna:
+            - Tokens JWT (acceso y refresco)
+            - Datos del usuario autenticado
+
+        Permisos: Acceso público
+    """
     permission_classes = [AllowAny]
     
     def post(self, request):
@@ -103,6 +178,20 @@ class LoginUser(generics.GenericAPIView):
             }, status=status.HTTP_400_BAD_REQUEST)
 
 class CheckUserExist(generics.GenericAPIView):
+    """
+        Vista para verificar existencia de usuario.
+
+        Endpoint: GET /database/user/check/?email={email}
+
+        Parámetros:
+            email (str): Correo electrónico a verificar
+
+        Retorna:
+            - exists: Boolean indicando existencia
+            - user: Datos del usuario si existe
+
+        Permisos: Acceso público
+    """
     permission_classes = [AllowAny]
     
     def get(self, request):

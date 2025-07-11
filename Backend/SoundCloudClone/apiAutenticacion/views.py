@@ -15,6 +15,25 @@ env = environ.Env()
 environ.Env.read_env(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), '.env'))
 
 class UserRegisterView(generics.CreateAPIView):
+    """
+        Vista para registrar nuevos usuarios.
+
+        Endpoint: POST /auth/register/
+
+        Campos requeridos:
+            - email: Email único del usuario
+            - password: Contraseña
+            - username: Nombre de usuario único
+            - nombre: Nombre completo (opcional)
+
+        Retorna:
+            - Mensaje de éxito
+            - Datos del usuario
+            - Token de acceso JWT
+            - Token de refresco JWT
+
+        Permisos: Acceso público
+    """
     queryset = User.objects.all()
     serializer_class = UserRegisterSerializer
     permission_classes = [AllowAny]
@@ -35,6 +54,23 @@ class UserRegisterView(generics.CreateAPIView):
         }, status=status.HTTP_201_CREATED)
 
 class UserLoginView(generics.GenericAPIView):
+    """
+        Vista para autenticar usuarios.
+
+        Endpoint: POST /auth/login/
+
+        Campos requeridos:
+            - email: Email del usuario
+            - password: Contraseña
+
+        Retorna:
+            - Mensaje de éxito
+            - Datos del usuario
+            - Token de acceso JWT
+            - Token de refresco JWT
+
+        Permisos: Acceso público
+    """
     serializer_class = UserLoginSerializer
     permission_classes = [AllowAny]
 
@@ -54,6 +90,17 @@ class UserLoginView(generics.GenericAPIView):
         }, status=status.HTTP_200_OK)
 
 class UserProfileView(generics.RetrieveAPIView):
+    """
+        Vista para obtener el perfil del usuario autenticado.
+
+        Endpoint: GET /auth/profile/
+
+        Retorna:
+            Datos completos del usuario actual
+
+        Permisos: Usuario autenticado
+        Requiere: Token JWT válido
+    """
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
 
@@ -61,6 +108,23 @@ class UserProfileView(generics.RetrieveAPIView):
         return self.request.user
 
 class UpdateUserInfo(generics.UpdateAPIView):
+    """
+        Vista para actualizar información del usuario.
+
+        Endpoint: PUT/PATCH /auth/update/
+
+        Campos modificables:
+            - username: Nuevo nombre de usuario
+            - email: Nuevo email
+            - nombre: Nuevo nombre completo
+
+        Retorna:
+            - Mensaje de éxito
+            - Datos actualizados
+
+        Permisos: Usuario autenticado
+        Requiere: Token JWT válido
+    """
     serializer_class = UserUpdateSerializer
     permission_classes = [IsAuthenticated]
 
@@ -80,6 +144,23 @@ class UpdateUserInfo(generics.UpdateAPIView):
         }, status=status.HTTP_200_OK)
 
 class UserLogout(generics.GenericAPIView):
+    """
+        Vista para cerrar sesión de usuario.
+
+        Endpoint: POST /auth/logout/
+
+        Campos requeridos:
+            - refresh: Token de refresco JWT
+
+        Acciones:
+            - Invalida el token JWT
+            - Cierra la sesión del usuario
+
+        Retorna:
+            Mensaje de confirmación
+
+        Permisos: Acceso público
+    """
     permission_classes = [AllowAny]
     
     def post(self, request):

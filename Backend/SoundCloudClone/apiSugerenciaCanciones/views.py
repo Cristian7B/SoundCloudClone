@@ -7,6 +7,33 @@ from apiPersistencia.models import Cancion
 from apiBuscar.serializers import CancionSerializer
 
 class SugerenciaCancionesView(APIView):
+    """
+        Vista para sugerir canciones aleatorias.
+
+        Endpoint: GET /sugerencias/canciones/
+
+        Retorna:
+            {
+                "mensaje": "Se encontraron X canciones sugeridas",
+                "canciones": [
+                    {
+                        "cancion_id": int,
+                        "titulo": str,
+                        "archivo_url": str,
+                        "imagen_url": str,
+                        "duracion": time,
+                        "genero": str,
+                        "usuario_id": int,
+                        "reproducciones": int,
+                        "likes_count": int,
+                        "created_at": datetime
+                    },
+                    ...
+                ]
+            }
+
+        Permisos: Acceso público
+    """
     permission_classes = [AllowAny]
     
     def get(self, request):

@@ -7,6 +7,19 @@ from rest_framework.exceptions import ValidationError
 User = get_user_model()
 
 class UserRegisterSerializer(serializers.ModelSerializer):
+    """
+        Serializador para el registro de nuevos usuarios.
+
+        Campos:
+            email (EmailField): Email único del usuario
+            password (CharField): Contraseña (mínimo 8 caracteres)
+            username (CharField): Nombre de usuario único
+            nombre (CharField): Nombre completo (opcional)
+
+        Validaciones:
+            - Email único en el sistema
+            - Contraseña con mínimo 8 caracteres
+    """
     email = serializers.EmailField(
         required=True,
         validators=[UniqueValidator(queryset=User.objects.all())]
@@ -22,6 +35,15 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         }
 
     def create(self, validated_data):
+        """
+                Crea un nuevo usuario con los datos validados.
+
+                Args:
+                    validated_data (dict): Datos validados del usuario
+
+                Returns:
+                    User: Nueva instancia de usuario creada
+        """
         user = User.objects.create_user(
             username=validated_data['username'],
             email=validated_data['email'],
@@ -31,10 +53,34 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         return user
 
 class UserLoginSerializer(serializers.Serializer):
+    """
+        Serializador para la autenticación de usuarios.
+
+        Campos:
+            email (EmailField): Email del usuario
+            password (CharField): Contraseña
+
+        Validaciones:
+            - Verifica credenciales mediante authenticate
+            - Comprueba si la cuenta está activa
+            - Requiere ambos campos email y password
+    """
     email = serializers.EmailField(required=True)
     password = serializers.CharField(required=True)
 
     def validate(self, attrs):
+        """
+                Valida las credenciales del usuario.
+
+                Args:
+                    attrs (dict): Datos de autenticación
+
+                Returns:
+                    dict: Datos validados con el usuario autenticado
+
+                Raises:
+                    ValidationError: Si las credenciales son inválidas o la cuenta está inactiva
+        """
         email = attrs.get('email')
         password = attrs.get('password')
 
@@ -51,7 +97,29 @@ class UserLoginSerializer(serializers.Serializer):
             raise ValidationError('Debe incluir email y password')
 
 class UserSerializer(serializers.ModelSerializer):
+    """
+        Serializador para mostrar información del usuario.
+
+        Campos:
+            user_id (AutoField): ID único del usuario
+            username (CharField): Nombre de usuario
+            email (EmailField): Email del usuario
+            nombre (CharField): Nombre completo
+            created_at (DateTimeField): Fecha de creación
+    """
     class Meta:
+        """
+            Serializador para actualizar datos del usuario.
+
+            Campos:
+                username (CharField): Nombre de usuario
+                email (EmailField): Email del usuario
+                nombre (CharField): Nombre completo
+
+            Notas:
+                - No permite modificar la contraseña
+                - Mantiene las validaciones de unicidad
+        """
         model = User
         fields = ('user_id', 'username', 'email', 'nombre', 'created_at')
 

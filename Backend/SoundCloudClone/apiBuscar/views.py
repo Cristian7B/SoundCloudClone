@@ -8,6 +8,28 @@ from .models import IndicesBusqueda, HistorialBusqueda, SugerenciasBusqueda
 from .serializers import CancionSerializer, PlaylistSerializer
 
 class BuscarView(APIView):
+    """
+        Vista principal para búsqueda de canciones y playlists.
+
+        Endpoint: GET /buscar/?q={término}
+
+        Parámetros:
+            q (str): Término de búsqueda (requerido)
+
+        Retorna:
+            {
+                "query": término buscado,
+                "canciones": lista de canciones coincidentes,
+                "playlists": lista de playlists públicas coincidentes,
+                "total_resultados": número total de coincidencias
+            }
+
+        Características:
+            - Búsqueda case-insensitive en títulos
+            - Limita a 20 resultados por categoría
+            - Registra búsquedas de usuarios autenticados
+            - Actualiza índices de búsqueda para optimización
+    """
     permission_classes = [AllowAny]
     
     def get(self, request):
@@ -56,6 +78,27 @@ class BuscarView(APIView):
         }, status=status.HTTP_200_OK)
 
 class SugerenciasView(APIView):
+    """
+        Vista para obtener sugerencias de búsqueda populares.
+
+        Endpoint: GET /sugerencias/
+
+        Retorna:
+            {
+                "sugerencias": [
+                    {
+                        "termino": término sugerido,
+                        "categoria": categoría de la sugerencia
+                    },
+                    ...
+                ]
+            }
+
+        Características:
+            - Devuelve máximo 10 sugerencias
+            - Solo incluye sugerencias activas
+            - Acceso público sin autenticación
+    """
     permission_classes = [AllowAny]
     
     def get(self, request):

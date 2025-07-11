@@ -8,6 +8,9 @@ from apiPersistencia.models import Playlist
 from apiBuscar.serializers import PlaylistSerializer
 
 class SugerenciaPlaylistsView(APIView):
+    """
+    Vista para sugerir playlists aleatorias.
+    """
     permission_classes = [AllowAny]
     
     def get(self, request):

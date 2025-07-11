@@ -10,6 +10,15 @@ from .serializers import (
 )
 
 class CancionListCreateView(generics.ListCreateAPIView):
+    """
+        Vista para listar todas las canciones y crear nuevas.
+
+        Endpoints:
+            GET /canciones/ - Lista todas las canciones
+            POST /canciones/ - Crea una nueva canción
+
+        Permisos: Acceso público (temporalmente)
+    """
     queryset = Cancion.objects.all()
     serializer_class = CancionSerializer
     permission_classes = [AllowAny]  # Cambiar a [IsAuthenticated] cuando esté listo
@@ -36,11 +45,30 @@ class CancionListCreateView(generics.ListCreateAPIView):
         }, status=status.HTTP_201_CREATED)
 
 class CancionDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+        Vista para gestionar una canción específica.
+
+        Endpoints:
+            GET /canciones/{id}/ - Obtiene detalles de una canción
+            PUT /canciones/{id}/ - Actualiza una canción
+            DELETE /canciones/{id}/ - Elimina una canción
+    """
     queryset = Cancion.objects.all()
     serializer_class = CancionSerializer
     permission_classes = [AllowAny]
 
 class PlaylistListCreateView(generics.ListCreateAPIView):
+    """
+        Vista para listar todas las playlists y crear nuevas.
+
+        Endpoints:
+            GET /playlists/ - Lista todas las playlists
+            POST /playlists/ - Crea una nueva playlist
+
+        Notas:
+            - Al crear, asigna automáticamente el usuario_id del creador
+            - Soporta creación con usuario autenticado o ID de prueba
+    """
     queryset = Playlist.objects.all()
     serializer_class = PlaylistSerializer
     permission_classes = [AllowAny]  # Cambiar a [IsAuthenticated] cuando esté listo
@@ -67,11 +95,29 @@ class PlaylistListCreateView(generics.ListCreateAPIView):
         }, status=status.HTTP_201_CREATED)
 
 class PlaylistDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+        Vista para gestionar una playlist específica.
+
+        Endpoints:
+            GET /playlists/{id}/ - Obtiene detalles de una playlist
+            PUT /playlists/{id}/ - Actualiza una playlist
+            DELETE /playlists/{id}/ - Elimina una playlist
+    """
     queryset = Playlist.objects.all()
     serializer_class = PlaylistSerializer
     permission_classes = [AllowAny]
 
 class AlbumListCreateView(generics.ListCreateAPIView):
+    """
+        Vista para listar todos los álbumes y crear nuevos.
+
+        Endpoints:
+            GET /albums/ - Lista todos los álbumes
+            POST /albums/ - Crea un nuevo álbum
+
+        Notas:
+            - Asigna automáticamente el usuario_id del creador
+    """
     queryset = Album.objects.all()
     serializer_class = AlbumSerializer
     permission_classes = [AllowAny]
@@ -93,6 +139,14 @@ class AlbumListCreateView(generics.ListCreateAPIView):
         }, status=status.HTTP_201_CREATED)
 
 class AlbumDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+        Vista para gestionar un álbum específico.
+
+        Endpoints:
+            GET /albums/{id}/ - Obtiene detalles de un álbum
+            PUT /albums/{id}/ - Actualiza un álbum
+            DELETE /albums/{id}/ - Elimina un álbum
+    """
     queryset = Album.objects.all()
     serializer_class = AlbumSerializer
     permission_classes = [AllowAny]
