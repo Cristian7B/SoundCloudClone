@@ -37,7 +37,7 @@ class PlaylistSerializer(serializers.ModelSerializer):
 class PlaylistCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Playlist
-        fields = ['titulo', 'descripcion', 'imagen_url', 'es_publica']
+        fields = ['titulo', 'descripcion', 'imagen_url', 'usuario_id','es_publica' ]
 
 class PlaylistCancionSerializer(serializers.ModelSerializer):
     cancion_titulo = serializers.CharField(source='cancion.titulo', read_only=True)
